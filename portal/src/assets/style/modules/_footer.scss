@@ -1,0 +1,24 @@
+.footer {
+  text-align: center;
+  padding: 8rem 0;
+  height: 270px;
+  background-color: $primary;
+  color: white;
+  font-weight: normal;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
+
+  a {
+    color: white;
+    text-decoration: none;
+  }
+
+  a:hover{
+    text-decoration: underline;
+  }
+}
