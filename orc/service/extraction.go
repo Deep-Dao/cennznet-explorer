@@ -60,6 +60,8 @@ func (s *extraction) processBkTask(b int64) error {
 		"-o", s.cfg.DBConnStr(),
 		"-s", s.cfg.DB.Schema,
 	)
+	log := s.log
+	log.Infoln("command", command)
 	status := <-command.Start()
 	if status.Error != nil {
 		return status.Error

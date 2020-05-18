@@ -1,4 +1,4 @@
-import { Hash } from '@cennznet/types/polkadot';
+// import { Hash } from '@cennznet/types/polkadot';
 import { plainToClass } from 'class-transformer';
 import { Asset } from '../domain/asset.domain';
 import { Attestation } from '../domain/attestation.domain';
@@ -93,7 +93,7 @@ export class BlockTask {
     }
 
     public async generateBalances() {
-        const blockHash = new Hash(this.block.hash);
+        const blockHash = 1;
         const balanceSearch = [];
         for (const acc of Object.keys(this.changes)) {
             for (const assetId of this.changes[acc]) {
@@ -101,9 +101,7 @@ export class BlockTask {
             }
         }
 
-        const data = await Promise.all(
-            balanceSearch.map(bal => apiService.getBalance(bal.assetId, bal.address, blockHash)),
-        );
+        const data = null
 
         for (const [idx, value] of data.entries()) {
             const { address, assetId } = balanceSearch[idx];

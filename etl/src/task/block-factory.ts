@@ -1,13 +1,13 @@
-import { AccountId, Block as RawBlock, EventRecord } from '@cennznet/types/polkadot';
-import { IBlockFee, ISessionInfo } from '../service/api.service';
+// import { AccountId, Block as RawBlock, EventRecord } from '@cennznet/types/polkadot';
+// import { IBlockFee, ISessionInfo } from '../service/api.service';
 import { BlockTask } from '../task/block-task';
 
 export interface IRawData {
-    block: RawBlock;
-    events: EventRecord[];
-    blockFee: IBlockFee;
-    validators: AccountId[];
-    sessionInfo: ISessionInfo;
+    block: any;
+    events: any[];
+    blockFee: any;
+    validators: any[];
+    sessionInfo: any;
     spendingAssetId: number;
     stakingAssetId: number;
 }
