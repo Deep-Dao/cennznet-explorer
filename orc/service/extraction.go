@@ -54,12 +54,14 @@ func (s *extraction) processBkTask(b int64) error {
 	// NOTE: Alternatively, we can invoke a Lambda function or some
 	// external microservice via HTTP
 	command := cmd.NewCmd(
-		"node", "dist/export_all.js",
+		"node", "src/export.js",
 		"-b", fmt.Sprintf("%d", b),
 		"-p", s.cfg.WSProvider(),
 		"-o", s.cfg.DBConnStr(),
 		"-s", s.cfg.DB.Schema,
 	)
+	log := s.log
+	log.Infoln(command)
 	status := <-command.Start()
 	if status.Error != nil {
 		return status.Error

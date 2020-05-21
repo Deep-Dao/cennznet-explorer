@@ -8,14 +8,13 @@ WORKDIR /etl
 
 COPY etl/package.json .
 COPY etl/package-lock.json .
-COPY etl/tsconfig.json .
 
-RUN npm install
+RUN yarn install
 
 # Transpile to JS
 
 COPY etl .
-RUN npm run build && npm prune --production
+#RUN npm run build && npm prune --production
 
 # Stage 2: orc
 
@@ -43,8 +42,7 @@ FROM node:10.14-alpine
 
 WORKDIR /etl
 
-COPY --from=etl-builder /etl/settings /etl/settings
-COPY --from=etl-builder /etl/dist /etl/dist
+COPY --from=etl-builder /etl/src /etl/src
 COPY --from=etl-builder /etl/node_modules /etl/node_modules
 
 COPY --from=orc-builder /go/bin/orc .
