@@ -53,6 +53,9 @@ socket.on('latestBlock', data => {
 	const firstChild = blockInner.find('.block').first();
 	blockTemplate = firstChild.clone();
 	// set values
+	if (!block) {
+		return
+	}
 	firstChild.attr('href', `/blocks/${block.number}`);
 	firstChild.find('h3').text(`#${block.number}`);
 	const p =
@@ -63,7 +66,7 @@ socket.on('latestBlock', data => {
 	p.attr('data-time', block.timestamp.toString());
 	firstChild.find('#txCount').text(block.transactionCount);
 	firstChild.find('#author').text(short(block.author));
-	firstChild.find('#validators').text(block.validators.length);
+	// firstChild.find('#validators').text(block.validators.length);
 	firstChild.removeClass(hiddenClass);
 	blockInner.addClass('anim').addClass('adding');
 

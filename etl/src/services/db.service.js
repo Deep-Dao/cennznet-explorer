@@ -1,5 +1,4 @@
 const knex = require('knex');
-const TaskCollection = require('../tasks/task-collection');
 
 let db;
 let _SCHEMA;

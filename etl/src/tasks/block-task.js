@@ -68,9 +68,11 @@ class BlockTask {
     async generateBalances() {
         const blockHash = 1; //new Hash(this.block.hash)
         const balanceSearch = [];
-        for (const acc of Object.keys(this.changes)) {
-            for (const assetId of this.changes[acc]) {
-                balanceSearch.push({ address: acc, assetId });
+        if (this.changes) {
+            for (const acc of Object.keys(this.changes)) {
+                for (const assetId of this.changes[acc]) {
+                    balanceSearch.push({ address: acc, assetId });
+                }
             }
         }
 

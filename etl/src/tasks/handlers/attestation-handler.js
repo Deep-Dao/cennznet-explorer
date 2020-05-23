@@ -18,7 +18,7 @@ function attestationHandler(task, raw) {
                 issuer: e.event.data[1].toString(),
                 topic: utils.u256ToString(e.event.data[2].toU8a()),
                 value: isClaimSet ? e.event.data[3].toString() : null,
-                blockNumber: task.block.number,
+                block_number: task.block.number,
                 timestamp: task.block.timestamp,
                 fee: events
                     .find(

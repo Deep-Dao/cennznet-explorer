@@ -14,7 +14,7 @@ async function contractHandler(task, raw) {
         const ex = block.extrinsics[idx];
         const contract = {
             address: e.event.data[1].toString(),
-            blockNumber: task.block.number,
+            block_number: task.block.number,
             timestamp: task.block.timestamp,
             endowment: ex.args[0].toString(),
             gasLimit: ex.args[1].toString(),
@@ -47,7 +47,7 @@ async function contractHandler(task, raw) {
         );
         const txn = {
             hash: ex.hash.toString(),
-            blockNumber: task.block.number,
+            block_number: task.block.number,
             blockHash: task.block.hash,
             fromAddress: ex.signature.signer.toString(),
             toAddress: ex.args[0].toString(),
@@ -83,7 +83,7 @@ async function contractHandler(task, raw) {
                     toAddress: e.event.data[1].toString(),
                     value: e.event.data[2].toString(),
                     assetId: spendingAssetId,
-                    blockNumber: task.block.number,
+                    block_number: task.block.number,
                     timestamp: task.block.timestamp,
                     index: traceIdx,
                     blockHash: task.block.hash,

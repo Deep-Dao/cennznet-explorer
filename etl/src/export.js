@@ -42,7 +42,7 @@ const args = require('yargs')
     .boolean('latest')
     .alias('latest', ['l']).argv;
 
-let targetBlockNumber, currentBlockNumber, maxConcurrency;
+let targetBlockNumber, currentBlockNumber, maxConcurrency, targetBlockNumberNew;
 const factory = new BlockFactory(
     blockHandler,
     txHandler,
@@ -77,8 +77,8 @@ async function main(bn, connectionString, uri, schema, workers, tn, latest,) {
     console.debug('Connecting to the node...');
     await apiService.connect({ provider: uri });
     await dbService.init({ connectionString, schema });
-    targetBlockNumber = await apiService.getBlock().then(b => b.header.number.toNumber());
-    currentBlockNumber = 2;
+    targetBlockNumber = await apiService.getBlock().then(b => b.header.number);
+    currentBlockNumber = bn;
     maxConcurrency = workers;
     console.info(`start: ${currentBlockNumber}, tartget: ${targetBlockNumber}`);
 
@@ -87,35 +87,29 @@ async function main(bn, connectionString, uri, schema, workers, tn, latest,) {
 
 async function sync(targetNumber) {
     if (currentBlockNumber >= targetNumber) {
+        targetBlockNumberNew = await apiService.getBlock().then(b => b.header.number);
+        await sync(targetBlockNumberNew);
+    }
+
+    if (targetNumber - currentBlockNumber > maxConcurrency) {
+        targetNumber = currentBlockNumber + maxConcurrency;
+    }
+    console.info(`Start to process blocks: ${currentBlockNumber} - ${targetNumber}`);
+
+    try {
+        const collection = await Promise.all(
+            _.range(currentBlockNumber, targetNumber).map(n => buildTask(n)),
+        ).then(tasks => new TaskCollection(tasks));
+        console.debug(`blocks extracted.`);
+        console.debug('Saving to db...');
+        await dbService.saveBlockTasks(collection);
+        console.debug('Saved to db');
+        currentBlockNumber = targetNumber;
+    } catch (err) {
+        process.exitCode = 1;
+        console.error('sync error', { err });
         return;
     }
-    if (targetNumber > currentBlockNumber) {
-        if (targetNumber - currentBlockNumber > maxConcurrency) {
-            targetNumber = currentBlockNumber + maxConcurrency;
-        }
-        console.info(`Start to process blocks: ${currentBlockNumber} - ${targetNumber}`);
-
-        try {
-            const collection = await Promise.all(
-                _.range(currentBlockNumber, targetNumber).map(n => buildTask(n)),
-            ).then(tasks => new TaskCollection(tasks));
-            console.debug(`blocks extracted.`);
-            console.debug('Saving to db...');
-            await dbService.saveBlockTasks(collection);
-            console.debug('Saved to db');
-            console.info(
-                `${collection.length} blocks saved. range: ${collection.first.block.number} - ${
-                    collection.last.block.number
-                }. `,
-            );
-            currentBlockNumber = targetNumber;
-        } catch (err) {
-            process.exitCode = 1;
-            console.error('sync error', { err });
-            return;
-        }
-    }
-    await sync(targetBlockNumber);
 }
 
 async function buildTask(bn) {

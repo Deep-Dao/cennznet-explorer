@@ -3,18 +3,18 @@ const utils = require('../../utils');
 function blockHandler(task, raw) {
     const { header, extrinsics } = raw.block;
     task.block = {
-        number: header.blockNumber.toNumber(),
+        number: parseInt(header.number),
         hash: header.hash.toString(),
-        parentHash: header.parentHash.toString(),
-        stateRoot: header.stateRoot.toString(),
-        extrinsicsRoot: header.extrinsicsRoot.toString(),
+        parent_hash: header.parentHash.toString(),
+        state_root: header.stateRoot.toString(),
+        extrinsics_root: header.extrinsicsRoot.toString(),
         timestamp: parseFloat(extrinsics[0].args[0]),
-        transactionCount: 0,
-        baseFee: parseFloat(raw.blockFee.baseFee),
-        byteFee: parseFloat(raw.blockFee.byteFee),
-        transferFee: parseFloat(raw.blockFee.transferFee),
-        // author: extHeader.author.toString(),
-        extrinsicCount: extrinsics.length,
+        transaction_count: 0,
+        base_fee: parseFloat(raw.blockFee.baseFee),
+        byte_fee: parseFloat(raw.blockFee.byteFee),
+        transfer_fee: parseFloat(raw.blockFee.transferFee),
+        author: '',
+        extrinsic_count: extrinsics.length,
     };
 }
 

@@ -25,8 +25,8 @@ async function assetHandler(task, raw) {
             {
                 hash: ex.hash.toString(),
                 id: assetId,
-                initialIssuance: e.event.data[2].toJSON().initialIssuance.toString(),
-                blockNumber: task.block.number,
+                initial_issuance: e.event.data[2].toJSON().initialIssuance.toString(),
+                block_number: task.block.number,
                 timestamp: task.block.timestamp,
                 symbol: type === AssetType.UserGenerated ? 'ASSET-' + assetId : null,
                 creator: ex.signature.signer.toString(),

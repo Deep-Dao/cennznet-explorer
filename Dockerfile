@@ -7,7 +7,6 @@ WORKDIR /etl
 # Resolve dependencies
 
 COPY etl/package.json .
-COPY etl/package-lock.json .
 
 RUN yarn install
 

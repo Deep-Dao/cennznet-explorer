@@ -217,11 +217,8 @@ SELECT
     b.byte_fee AS "byteFee",
     b.transfer_fee AS "transferFee",
     b.author,
-    b.extrinsic_count AS "extrinsicsCount",
-    s.validators
+    b.extrinsic_count AS "extrinsicsCount"
 FROM {os.environ["DB_SCHEMA"]}.block b
-LEFT JOIN {os.environ["DB_SCHEMA"]}.session s ON b."number" = s.block_number
-WHERE b."timestamp" BETWEEN %(start_time)s AND %(end_time)s
 ORDER BY b."number" DESC
 LIMIT %(limit)s
 OFFSET (%(page)s - 1) * %(limit)s

@@ -25,8 +25,7 @@ class TaskCollection {
         const data = this.tasks
             .map(task => task.get(key))
             .reduce((result, items) => result.concat(items), [])
-            .filter(item => !!item)
-            .map(item => item.toJSON(true));
+            .filter(item => !!item);
         return uniqKey ? _.uniqBy(data, uniqKey) : data;
     }
 }

@@ -15,17 +15,20 @@
     "npm": ">=6.4.1"
   },
   "resolutions": {
-    "@polkadot/api-derive": "1.14.1",
-    "@polkadot/rpc-core": "1.14.1",
-    "@polkadot/api": "1.14.1"
+      "@polkadot/types": "1.2.1",
+      "@polkadot/metadata": "1.2.1",
+      "@polkadot/api": "1.2.1",
+      "@polkadot/api-derive": "1.2.1",
+      "@polkadot/rpc-core": "1.2.1"
   },
   "dependencies": {
-    "@cennznet/api": "^1.0.0",
-    "@cennznet/crml-attestation": "^1.0.0",
-    "@cennznet/crml-cennzx-spot": "^1.0.0",
-    "@cennznet/crml-generic-asset": "^1.0.0",
-    "@cennznet/types": "^1.0.0",
-    "@cennznet/util": "^1.0.0",
+    "@cennznet/api": "1.0.0",
+    "@cennznet/wallet": "1.0.0",
+    "@cennznet/crml-attestation": "1.0.0",
+    "@cennznet/crml-cennzx-spot": "1.0.0",
+    "@cennznet/crml-generic-asset": "1.0.0",
+    "@cennznet/types": "1.0.0",
+    "@cennznet/util": "1.0.0",
     "@plugnet/keyring": "1.1.100",
     "class-transformer": "^0.2.0",
     "knex": "^0.16.3",
