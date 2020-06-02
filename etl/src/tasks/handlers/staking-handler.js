@@ -16,7 +16,7 @@ async function stakingHandler(task, raw) {
                     task.addStaking(
                         {
                             address: lv.toString(),
-                            blockNumber: task.block.number,
+                            block_number: task.block.number,
                             event: 'Reward',
                             value: e.event.data[0].toString(),
                         },
@@ -28,7 +28,7 @@ async function stakingHandler(task, raw) {
                 task.addStaking(
                     {
                         address: e.event.data[0].toString(),
-                        blockNumber: task.block.number,
+                        block_number: task.block.number,
                         event: 'Slash',
                         value: e.event.data[1].toString(),
                     },
@@ -37,7 +37,7 @@ async function stakingHandler(task, raw) {
             case 'staking.OfflineWarning':
                 task.addStaking({
                         address: e.event.data[0].toString(),
-                        blockNumber: task.block.number,
+                        block_number: task.block.number,
                         event: 'Warning',
                         value: e.event.data[1].toString(),
                     },
@@ -52,7 +52,7 @@ async function stakingHandler(task, raw) {
             task.addStaking(
                 {
                     address: v.toString(),
-                    blockNumber: task.block.number,
+                    block_number: task.block.number,
                     event: 'Start',
                     value: null,
                 },
@@ -61,4 +61,4 @@ async function stakingHandler(task, raw) {
     }
 }
 
-module.exports = stakingHandler();
+module.exports = stakingHandler;

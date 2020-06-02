@@ -18,10 +18,10 @@ function txHandler(task, raw) {
         );
         const txn = {
             hash: ex.hash.toString(),
-            blockNumber: task.block.number,
-            blockHash: task.block.hash,
-            fromAddress: ex.signature.signer.toString(),
-            toAddress: ex.args[1].toString(),
+            block_number: task.block.number,
+            block_hash: task.block.hash,
+            from_address: ex.signature.signer.toString(),
+            to_address: ex.args[1].toString(),
             value: ex.args[2].toString(),
             fee: events
                 .find(
@@ -34,8 +34,8 @@ function txHandler(task, raw) {
             size,
             status: !!gaStatus,
             timestamp: task.block.timestamp,
-            assetId: parseFloat(ex.args[0].toString()),
-            gasLimit: null,
+            asset_idd: parseFloat(ex.args[0].toString()),
+            gas_limit: null,
             index: idx,
             type: 'Standard',
             data: null,

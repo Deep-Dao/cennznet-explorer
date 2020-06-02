@@ -1,11 +1,11 @@
 function sessionHandler(task, raw) {
     task.setSession(
         {
-            blockNumber: task.block.number,
-            sessionProgress: raw.sessionInfo.sessionProgress,
-            sessionLength: raw.sessionInfo.sessionLength,
-            eraProgress: raw.sessionInfo.eraProgress,
-            eraLength: raw.sessionInfo.eraLength,
+            block_number: task.block.number,
+            session_progress: isNaN(raw.sessionInfo.sessionProgress) ? 0 : raw.sessionInfo.sessionProgress,
+            session_length: raw.sessionInfo.sessionLength,
+            era_progress: raw.sessionInfo.eraProgress,
+            era_length: raw.sessionInfo.eraLength,
             validators: raw.validators.map(v => v.toString()),
         },
     );

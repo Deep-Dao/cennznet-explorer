@@ -3,12 +3,12 @@ const BlockFactory = require('./tasks/block-factory');
 const apiService = require('./services/api');
 const dbService = require('./services/db.service');
 const blockHandler = require('./tasks/handlers/block-handler');
-const txHandler = require('./tasks/handlers/block-handler');
-const sessionHandler = require('./tasks/handlers/block-handler');
-const stakingHandler = require('./tasks/handlers/block-handler');
-const contractHandler = require('./tasks/handlers/block-handler');
-const assetHandler = require('./tasks/handlers/block-handler');
-const attestationHandler = require('./tasks/handlers/block-handler');
+const txHandler = require('./tasks/handlers/tx-handler');
+const sessionHandler = require('./tasks/handlers/session-handler');
+const stakingHandler = require('./tasks/handlers/staking-handler');
+const contractHandler = require('./tasks/handlers/contract-handler');
+const assetHandler = require('./tasks/handlers/asset-handler');
+const attestationHandler = require('./tasks/handlers/attestation-handler');
 const _ = require('lodash');
 
 

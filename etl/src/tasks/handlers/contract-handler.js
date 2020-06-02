@@ -17,11 +17,11 @@ async function contractHandler(task, raw) {
             block_number: task.block.number,
             timestamp: task.block.timestamp,
             endowment: ex.args[0].toString(),
-            gasLimit: ex.args[1].toString(),
-            codeHash: ex.args[2].toString(),
+            gas_limit: ex.args[1].toString(),
+            code_hash: ex.args[2].toString(),
             data: ex.args[3].toString(),
             creator: e.event.data[0].toString(),
-            byteCode: byteCodes[i],
+            byte_code: byteCodes[i],
             fee: raw.events
                 .find(
                     E =>
@@ -48,9 +48,9 @@ async function contractHandler(task, raw) {
         const txn = {
             hash: ex.hash.toString(),
             block_number: task.block.number,
-            blockHash: task.block.hash,
-            fromAddress: ex.signature.signer.toString(),
-            toAddress: ex.args[0].toString(),
+            block_hash: task.block.hash,
+            from_address: ex.signature.signer.toString(),
+            to_address: ex.args[0].toString(),
             value: ex.args[1].toString(),
             fee: events
                 .find(
@@ -63,8 +63,8 @@ async function contractHandler(task, raw) {
             size,
             status: !!transfertEvent,
             timestamp: task.block.timestamp,
-            assetId: spendingAssetId,
-            gasLimit: parseFloat(ex.args[2].toString()),
+            asset_id: spendingAssetId,
+            gas_limit: parseFloat(ex.args[2].toString()),
             index: idx,
             type: TransactionType.Contract,
             data: ex.args[3].toString(),
@@ -78,15 +78,15 @@ async function contractHandler(task, raw) {
                 continue;
             }
             task.addTrace({
-                    transactionHash: txn.hash,
-                    fromAddress: e.event.data[0].toString(),
-                    toAddress: e.event.data[1].toString(),
+                    transaction_hash: txn.hash,
+                    from_address: e.event.data[0].toString(),
+                    to_address: e.event.data[1].toString(),
                     value: e.event.data[2].toString(),
-                    assetId: spendingAssetId,
+                    asset_id: spendingAssetId,
                     block_number: task.block.number,
                     timestamp: task.block.timestamp,
                     index: traceIdx,
-                    blockHash: task.block.hash,
+                    block_hash: task.block.hash,
                 });
         }
     }

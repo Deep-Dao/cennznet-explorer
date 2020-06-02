@@ -3,6 +3,17 @@ const apiService = require('../services/api');
 
 
 class BlockTask {
+    constructor() {
+        this.transactions = [];
+        this.traces = [];
+        this.contracts = [];
+        this.attestations = [];
+        this.newAssets = [];
+        this.session = [];
+        this.stakings = [];
+        this.changes = {};
+    }
+
     addTransaction(tx) {
         this.block.transactionCount++;
         this.transactions.push(tx);
@@ -50,11 +61,11 @@ class BlockTask {
 
     addStaking(staking, assetId) {
         this.stakings.push(staking);
-        if (staking.event === StakingType.Reward) {
+        if (staking.event === 'Reward') {
             assetId !== undefined
                 ? this.addChange(staking.address, assetId)
                 : this.addChange(staking.address, this.spendingAssetId);
-        } else if (staking.event === StakingType.Slash) {
+        } else if (staking.event === 'Slash') {
             assetId !== undefined
                 ? this.addChange(staking.address, assetId)
                 : this.addChange(staking.address, this.stakingAssetId);

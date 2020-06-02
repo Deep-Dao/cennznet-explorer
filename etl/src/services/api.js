@@ -1,5 +1,10 @@
 const cennznetApi = require('@cennznet/api');
 const cennznetGenericAsset = require('@cennznet/crml-generic-asset');
+const { Keyring } = require('@cennznet/wallet');
+const { createType } = require('@cennznet/types');
+const testKeyring = require('@plugnet/keyring/testing');
+const fs = require('fs');
+const {randomAsU8a} = require('@cennznet/util');
 
 let api, ga;
 
@@ -130,5 +135,114 @@ async function getStakingAssetId(blockHash) {
     return api.query.genericAsset.stakingAssetId(blockHash).then(r => r.toString());
 }
 
+const ALICE = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
+const BOB = '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty';
+const AMOUNT = 10000;
+const FEE_ASSET_ID = 16000;
+const MIN_REQUIRED_POOL_BALANCE = 1000000;
+const CENNZ = 16000;
 
-module.exports = {getByteCode, connect, getBlock, getBlockFee, getBalance, getSpendingAssetId, getStakingAssetId, getSessionInfo, getValidators, getReservedBalance, getFreeBalance, getEvents};
+async function queryPoolBalance() {
+    const [poolAssetBalance, poolCoreAssetBalance] = [
+        await api.derive.cennzxSpot.poolAssetBalance(FEE_ASSET_ID),
+        await api.derive.cennzxSpot.poolCoreAssetBalance(FEE_ASSET_ID),
+    ];
+
+    console.log('Pool balance: assetId: 16000, amount: ', poolAssetBalance.toString(),
+        '; assetId: 16001, amount: ', poolCoreAssetBalance.toString());
+
+    return [poolAssetBalance, poolCoreAssetBalance];
+}
+
+async function payTxFee() {
+    const keyring = testKeyring.default();
+
+    const nonce = await api.query.system.accountNonce(ALICE);
+
+    const alicePair = keyring.getPair(ALICE);
+    const bobPair = keyring.getPair(BOB);
+    const recipient = keyring.addFromSeed(randomAsU8a(32)).address;
+
+    const [poolAssetBalance, poolCoreAssetBalance] = await queryPoolBalance(api);
+
+    if (poolCoreAssetBalance.ltn(MIN_REQUIRED_POOL_BALANCE)) {
+        console.log('Pool core asset balance is lower than min requirement, adding some');
+        await new Promise((resolve => {
+            api.tx.cennzxSpot.addLiquidity(FEE_ASSET_ID, 0, MIN_REQUIRED_POOL_BALANCE * 2, MIN_REQUIRED_POOL_BALANCE)
+                .signAndSend(bobPair, ({events = [], status}) => {
+                    console.log('Transaction status:', status.type);
+
+                    if (status.isFinalized) {
+                        console.log('Completed at block hash', status.asFinalized.toHex());
+                        console.log('Events:');
+
+                        events.forEach(({phase, event: {data, method, section}}) => {
+                            console.log('\t', phase.toString(), `: ${section}.${method}`, data.toString());
+                        });
+
+                        resolve();
+                    }
+                });
+        }));
+        await queryPoolBalance(api);
+    }
+
+    const feeExchangeOpt = {assetId: FEE_ASSET_ID, maxPayment: '1000000000000'};
+    api.tx.genericAsset
+        .transfer(CENNZ, recipient, AMOUNT)
+        .sign(alicePair, {nonce, feeExchange: feeExchangeOpt})
+        .send(({events = [], status}) => {
+            console.log('Transaction status:', status.type);
+
+            if (status.isFinalized) {
+                console.log('Completed at block hash', status.asFinalized.toHex());
+                console.log('Events:');
+
+                events.forEach(({phase, event: {data, method, section}}) => {
+                    console.log('\t', phase.toString(), `: ${section}.${method}`, data.toString());
+                });
+
+                process.exit(0);
+            }
+        });
+}
+
+async function transferWithAllowedBlock () {
+    const keyring = new Keyring({ type: 'sr25519' });
+
+    const alice = keyring.addFromUri('//Alice');
+
+    const nonce = await api.query.system.accountNonce(alice.address);
+
+    const signedBlock = await api.rpc.chain.getBlock();
+
+    const currentHeight = signedBlock.block.header.number;
+    const blockHash = signedBlock.block.header.hash;
+
+    const era = createType('ExtrinsicEra', { current: currentHeight, period: 10 });
+
+    const transfer = api.tx.genericAsset.transfer(CENNZ, BOB, 12345);
+
+    const hash = await transfer.signAndSend(alice, { blockHash, era, nonce });
+
+    console.log('Transfer sent with hash', hash.toHex());
+}
+
+async function transfer () {
+    const keyring = new Keyring({ type: 'sr25519' });
+    const alice = keyring.addFromUri('//Alice');
+    const transfer = api.tx.genericAsset.transfer(CENNZ, BOB, 12345);
+    const hash = await transfer.signAndSend(alice);
+
+    console.log('Transfer sent with hash', hash.toHex());
+}
+
+async function balanceChangeListener () {
+    console.log('Tracking balances for:', [ALICE, BOB]);
+
+    api.query.genericAsset.freeBalance.multi([[CENNZ, ALICE], [CENNZ, BOB]], (balances) => {
+        console.log('Change detected, new balances: ', balances);
+    });
+}
+
+module.exports = {getByteCode, connect, getBlock, getBlockFee, getBalance, getSpendingAssetId, getStakingAssetId, getSessionInfo, getValidators, getReservedBalance, getFreeBalance, getEvents, payTxFee, transferWithAllowedBlock, transfer, balanceChangeListener};
