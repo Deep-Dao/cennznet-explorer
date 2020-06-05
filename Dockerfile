@@ -44,5 +44,6 @@ WORKDIR /etl
 COPY --from=etl-builder /etl/src /etl/src
 COPY --from=etl-builder /etl/node_modules /etl/node_modules
 
+COPY --from=orc-builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=orc-builder /go/bin/orc .
 COPY --from=orc-builder /go/bin/taskgen .

@@ -471,7 +471,6 @@ WITH block AS (
     SELECT
     "number" AS block_number
     FROM {os.environ["DB_SCHEMA"]}.block
-    WHERE "timestamp" BETWEEN %(start_time)s AND %(end_time)s
 ), combined_txns AS (
     SELECT type, asset_id
     FROM {os.environ["DB_SCHEMA"]}.transaction
@@ -491,7 +490,6 @@ WITH block AS (
     SELECT
     hash AS "block_hash", "number" AS block_number
     FROM {os.environ["DB_SCHEMA"]}.block
-    WHERE "timestamp" BETWEEN %(start_time)s AND %(end_time)s
 ), combined_txns AS (
     SELECT tx.*
     FROM {os.environ["DB_SCHEMA"]}.transaction tx
@@ -706,7 +704,6 @@ WITH block AS (
     SELECT
     "number" AS block_number
     FROM {os.environ["DB_SCHEMA"]}.block
-    WHERE "timestamp" BETWEEN %(start_time)s AND %(end_time)s
 ), combined_txns AS (
     SELECT 
     CASE WHEN from_address = %(address)s THEN 'Outgoing' ELSE 'Incoming' END AS txn_flow,
@@ -735,7 +732,6 @@ WITH block AS (
     SELECT
     hash AS block_hash, "number" AS block_number
     FROM {os.environ["DB_SCHEMA"]}.block
-    WHERE "timestamp" BETWEEN %(start_time)s AND %(end_time)s
 ), combined_txns AS (
     SELECT tx.*,
     CASE WHEN from_address = %(address)s THEN 'Outgoing' ELSE 'Incoming' END AS txn_flow

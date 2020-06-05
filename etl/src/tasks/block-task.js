@@ -15,7 +15,7 @@ class BlockTask {
     }
 
     addTransaction(tx) {
-        this.block.transactionCount++;
+        this.block.transaction_count++;
         this.transactions.push(tx);
 
         for (const acc of [tx.fromAddress, tx.toAddress]) {
@@ -87,21 +87,21 @@ class BlockTask {
             }
         }
 
-        const data = await Promise.all(
-            balanceSearch.map(bal => apiService.getBalance(bal.assetId, bal.address, blockHash)),
-        );
-
-        for (const [idx, value] of data.entries()) {
-            const { address, assetId } = balanceSearch[idx];
-            const b = {
-                address,
-                balance: value.free,
-                blockNumber: this.block.number,
-                assetId,
-                reservedBalance: value.reserved,
-            };
-            this.balances.push(b);
-        }
+        // const data = await Promise.all(
+        //     balanceSearch.map(bal => apiService.getBalance(bal.assetId, bal.address, blockHash)),
+        // );
+        //
+        // for (const [idx, value] of data.entries()) {
+        //     const { address, assetId } = balanceSearch[idx];
+        //     const b = {
+        //         address,
+        //         balance: value.free,
+        //         blockNumber: this.block.number,
+        //         assetId,
+        //         reservedBalance: value.reserved,
+        //     };
+        //     this.balances.push(b);
+        // }
     }
 
     addChange(addr, assetId) {

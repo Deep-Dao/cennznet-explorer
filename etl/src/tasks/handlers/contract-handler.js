@@ -35,7 +35,7 @@ async function contractHandler(task, raw) {
     }
 
     for (const [idx, ex] of block.extrinsics.entries()) {
-        const exType = utils.getExtrinsicType(ex);
+        const exType = apiService.getExtrinsicType(ex);
         if (exType !== 'contract.call') {
             continue;
         }

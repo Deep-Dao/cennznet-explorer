@@ -33,6 +33,11 @@ async function connect({ provider: uri }) {
 
 }
 
+async function getExtrinsicType(ex) {
+    const { method, section } = await api.findCall(ex.method.callIndex)
+    return section + '.' + method;
+}
+
 async function getBlock(n) {
     const hash = n ? await api.rpc.chain.getBlockHash(n) : await api.rpc.chain.getBlockHash();
     return api.rpc.chain.getBlock(hash).then((r) => r.block);
@@ -72,7 +77,7 @@ async function getFreeBalance(
 ) {
     return blockHash
         ? ga.getFreeBalance
-              (blockHash, assetId.toString(), address)
+              (blockHash, assetId ? assetId.toString() : '', address)
               .then(balance => balance.toString())
         : ga.getFreeBalance(assetId.toString(), address).then(balance => balance.toString());
 }
@@ -84,7 +89,7 @@ async function getReservedBalance(
 ) {
     return blockHash
         ? ga.getReservedBalance
-              (blockHash, assetId.toString(), address)
+              (blockHash, assetId ? assetId.toString() : '', address)
               .then(balance => balance.toString())
         : ga.getReservedBalance(assetId.toString(), address).then(balance => balance.toString());
 }
@@ -245,4 +250,4 @@ async function balanceChangeListener () {
     });
 }
 
-module.exports = {getByteCode, connect, getBlock, getBlockFee, getBalance, getSpendingAssetId, getStakingAssetId, getSessionInfo, getValidators, getReservedBalance, getFreeBalance, getEvents, payTxFee, transferWithAllowedBlock, transfer, balanceChangeListener};
+module.exports = {getByteCode, connect, getBlock, getBlockFee, getBalance, getSpendingAssetId, getStakingAssetId, getSessionInfo, getValidators, getReservedBalance, getFreeBalance, getEvents, payTxFee, transferWithAllowedBlock, transfer, balanceChangeListener, getExtrinsicType};

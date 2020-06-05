@@ -1,13 +1,13 @@
 const cenUtil = require('@cennznet/util')
+const api = require('@cennznet/api')
 
 function getEventType(e) {
     return e.event.section + '.' + e.event.method;
 }
 
-function getExtrinsicType(ex) {
-    // const { method, section } = Method.findFunction(ex.method.callIndex);
-    // return section + '.' + method;
-    return '';
+async function getExtrinsicType(ex) {
+    const { method, section } = api.Call.findCall(ex.method.callIndex)
+    return section + '.' + method;
 }
 
 function stripTrailingZero(value) {
