@@ -48,8 +48,8 @@ socket.on('latestBlock', data => {
 	evn.addFilter('ago', humanReadableTime);
 	evn.addFilter('short', short);
 	evn.addFilter('toStdUnit', toStdUnit);
-	const block = data.messages.block;
-	const txns = data.messages.txns.txns;
+	const { block, txns} = data.messages;
+
 	const firstChild = blockInner.find('.block').first();
 	blockTemplate = firstChild.clone();
 	// set values
@@ -70,13 +70,18 @@ socket.on('latestBlock', data => {
 	firstChild.removeClass(hiddenClass);
 	blockInner.addClass('anim').addClass('adding');
 
-	txns.forEach(tx => {
-		const newTx = evn.renderString(txHtml, { tx });
-		tBody
-			.find('tr')
-			.last()
-			.remove();
-		tBody.prepend(newTx);
-	});
-
+	if (
+		txns.hasOwnProperty('txns') &&
+		Array.isArray(txns.txns) &&
+		txns.txns.length > 0
+	) {
+		txns.txns.forEach(tx => {
+			const newTx = evn.renderString(txHtml, { tx });
+			tBody
+				.find('tr')
+				.last()
+				.remove();
+			tBody.prepend(newTx);
+		});
+	}
 });

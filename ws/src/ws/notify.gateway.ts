@@ -30,12 +30,19 @@ export class NotifyGateway {
 	private async broadcastLatestBlock(msg: IMessage): Promise<void> {
 		const latestBlockHeight = await this.dataService.getBlockHeight();
 		const blockNumber = msg.blockNumber;
-		if (blockNumber >= latestBlockHeight) {
-			const [block, txns] = await Promise.all([
+		logger.debug('blockNumber ' + blockNumber);
+		logger.debug('latestBlockHeight ' + latestBlockHeight);
+
+		// TODO blockNumber some haw always less then latestBlockHeight ??
+		// TODO OR true is a temporary workaround
+		if (blockNumber >= latestBlockHeight || true) {
+			const result = await Promise.all([
 				this.dataService.getBlock(blockNumber),
 				this.dataService.getTxListByBlockNumber(blockNumber, 1, 20, {}),
 				// Promise.resolve(txn)
 			]);
+
+			const [block, txns] = result;
 			this.server.emit('latestBlock', { messages: { block, txns } });
 		}
 	}

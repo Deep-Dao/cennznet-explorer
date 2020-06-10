@@ -110,7 +110,7 @@ async function sync(targetNumber) {
         console.error('sync error', { err });
         return;
     }
-    await sync(targetBlockNumber);
+    // await sync(targetBlockNumber);
 }
 
 async function buildTask(bn) {
