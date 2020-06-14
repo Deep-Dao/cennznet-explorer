@@ -10,7 +10,7 @@ const contractHandler = require('./tasks/handlers/contract-handler');
 const assetHandler = require('./tasks/handlers/asset-handler');
 const attestationHandler = require('./tasks/handlers/attestation-handler');
 const _ = require('lodash');
-
+const logger = require('./logger');
 
 const args = require('yargs')
     .option('block_number', {
@@ -64,54 +64,56 @@ main(
 )
     .catch(e => {
         process.exitCode = 1;
-        console.error(e.stack);
-        console.error(args.block_number);
+        logger.error('main', e.stack);
+        logger.error('main', args.block_number);
         throw new Error('Something wrong');
     })
     .finally(() => {
-        console.info(`${process.exitCode}`);
+        logger.info(`${process.exitCode}`);
         process.exit();
     });
 
 async function main(bn, connectionString, uri, schema, workers, tn, latest,) {
-    console.debug('Connecting to the node...');
+    logger.debug('Connecting to the node...');
     await apiService.connect({ provider: uri });
     await dbService.init({ connectionString, schema });
-    targetBlockNumber = await apiService.getBlock().then(b => b.header.number);
+    targetBlockNumber = bn + 1;
     currentBlockNumber = bn;
     maxConcurrency = workers;
-    console.info(`start: ${currentBlockNumber}, tartget: ${targetBlockNumber}`);
+    logger.info(`start: ${currentBlockNumber}, tartget: ${targetBlockNumber}`);
 
     await sync(targetBlockNumber);
 }
 
 async function sync(targetNumber) {
     if (currentBlockNumber >= targetNumber) {
-        targetBlockNumberNew = await apiService.getBlock().then(b => b.header.number);
-        await sync(targetBlockNumberNew);
-    }
-
-    if (targetNumber - currentBlockNumber > maxConcurrency) {
-        targetNumber = currentBlockNumber + maxConcurrency;
-    }
-    console.info(`Start to process blocks: ${currentBlockNumber} - ${targetNumber}`);
-
-    try {
-        const collection = await Promise.all(
-            _.range(currentBlockNumber, targetNumber).map(n => buildTask(n)),
-        ).then(tasks => new TaskCollection(tasks));
-        console.debug(`blocks extracted.`);
-        console.debug('Saving to db...');
-        await dbService.saveBlockTasks(collection);
-        console.debug('Saved to db');
-        currentBlockNumber = targetNumber;
-    } catch (err) {
-        process.exitCode = 1;
-        console.error('sync error', { err });
+        logger.info(`sync targetNumber: ${targetNumber}; currentBlockNumber: ${currentBlockNumber} - ${targetNumber}`);
         return;
     }
-    // await sync(targetBlockNumber);
+
+    if (targetNumber > currentBlockNumber) {
+        if (targetNumber - currentBlockNumber > maxConcurrency) {
+            targetNumber = currentBlockNumber + maxConcurrency;
+        }
+        logger.info(`Start to process blocks: ${currentBlockNumber} - ${targetNumber}`);
+
+        try {
+            const collection = await Promise.all(
+                _.range(currentBlockNumber, targetNumber).map(n => buildTask(n)),
+            ).then(tasks => new TaskCollection(tasks));
+            logger.debug(`blocks extracted.`);
+            logger.debug('Saving to db...');
+            await dbService.saveBlockTasks(collection);
+            currentBlockNumber = targetNumber;
+        } catch (err) {
+            logger.error('sync error ' + JSON.stringify(err) + 'targetNumber: ' + targetNumber);
+            process.exitCode = 1;
+            return;
+        }
+    }
+    await sync(targetBlockNumber);
 }
+
 
 async function buildTask(bn) {
     const rawBlock = await apiService.getBlock(bn);
