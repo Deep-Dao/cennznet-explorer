@@ -10,7 +10,7 @@ const contractHandler = require('./tasks/handlers/contract-handler');
 const assetHandler = require('./tasks/handlers/asset-handler');
 const attestationHandler = require('./tasks/handlers/attestation-handler');
 const _ = require('lodash');
-const logger = require('./logger');
+// const // logger = require('./// logger');
 
 const args = require('yargs')
     .option('block_number', {
@@ -64,30 +64,30 @@ main(
 )
     .catch(e => {
         process.exitCode = 1;
-        logger.error('main', e.stack);
-        logger.error('main', args.block_number);
+        // logger.error('main', e.stack);
+        // logger.error('main', args.block_number);
         throw new Error('Something wrong');
     })
     .finally(() => {
-        logger.info(`${process.exitCode}`);
+        // logger.info(`${process.exitCode}`);
         process.exit();
     });
 
 async function main(bn, connectionString, uri, schema, workers, tn, latest,) {
-    logger.debug('Connecting to the node...');
+    // // logger.debug('Connecting to the node...');
     await apiService.connect({ provider: uri });
     await dbService.init({ connectionString, schema });
     targetBlockNumber = bn + 1;
     currentBlockNumber = bn;
     maxConcurrency = workers;
-    logger.info(`start: ${currentBlockNumber}, tartget: ${targetBlockNumber}`);
+    // // logger.info(`start: ${currentBlockNumber}, tartget: ${targetBlockNumber}`);
 
     await sync(targetBlockNumber);
 }
 
 async function sync(targetNumber) {
     if (currentBlockNumber >= targetNumber) {
-        logger.info(`sync targetNumber: ${targetNumber}; currentBlockNumber: ${currentBlockNumber} - ${targetNumber}`);
+        // logger.info(`sync targetNumber: ${targetNumber}; currentBlockNumber: ${currentBlockNumber} - ${targetNumber}`);
         return;
     }
 
@@ -95,18 +95,18 @@ async function sync(targetNumber) {
         if (targetNumber - currentBlockNumber > maxConcurrency) {
             targetNumber = currentBlockNumber + maxConcurrency;
         }
-        logger.info(`Start to process blocks: ${currentBlockNumber} - ${targetNumber}`);
+        // logger.info(`Start to process blocks: ${currentBlockNumber} - ${targetNumber}`);
 
         try {
             const collection = await Promise.all(
                 _.range(currentBlockNumber, targetNumber).map(n => buildTask(n)),
             ).then(tasks => new TaskCollection(tasks));
-            logger.debug(`blocks extracted.`);
-            logger.debug('Saving to db...');
+            // logger.debug(`blocks extracted.`);
+            // logger.debug('Saving to db...');
             await dbService.saveBlockTasks(collection);
             currentBlockNumber = targetNumber;
         } catch (err) {
-            logger.error('sync error ' + JSON.stringify(err) + 'targetNumber: ' + targetNumber);
+            // logger.error('sync error ' + JSON.stringify(err) + 'targetNumber: ' + targetNumber);
             process.exitCode = 1;
             return;
         }

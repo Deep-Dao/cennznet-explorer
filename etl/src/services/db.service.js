@@ -1,3 +1,5 @@
+// const logger = require('./../logger');
+
 const knex = require('knex');
 
 let db;
@@ -23,6 +25,8 @@ async function saveBlockTasks(collect) {
     const stakings = collect.getData('stakings');
     const attestations = collect.getData('attestations');
     const traces = collect.getData('traces');
+
+    // logger.debug('block to save' + JSON.stringify(blocks));
 
     const contracts = collect.getData('contracts');
 
@@ -69,6 +73,8 @@ async function saveBlockTasks(collect) {
 
             return t.commit();
         } catch (err) {
+            // logger.error('saveBlockTasks error' + JSON.stringify(err));
+
             return t.rollback(err);
         }
     });
