@@ -31,7 +31,11 @@
           {% else %}
             <td><div class="tx-status tx-status--failed"><i class="fas fa-times"></i></div></td>
           {% endif %}
-          <td class="balance"> {{ tx.fromAddressBalance | toStdUnit }} {{ tx.assetSymbol }}</td>
+          <td class="balance">
+            {% if tx.fromAddressBalance %}
+              {{ tx.fromAddressBalance | toStdUnit }} {{ tx.assetSymbol }}
+            {% endif %}
+           </td>
         {% else %}
           <td>{{ addrLink(tx.fromAddress) }}</td>
           <td class="incoming"><strong>{{ tx.value | toStdUnit }}</strong> </td>
