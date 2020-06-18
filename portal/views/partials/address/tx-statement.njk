@@ -46,7 +46,9 @@
           {% else %}
             <td><div class="tx-status tx-status--failed"><i class="fas fa-times"></i></div></td>
           {% endif %}
-          <td class="balance"> {{ tx.toAddressBalance | toStdUnit }} {{ tx.assetSymbol }}</td>
+          {% if tx.toAddressBalance %}
+            <td class="balance"> {{ tx.toAddressBalance | toStdUnit }} {{ tx.assetSymbol }}</td>
+          {% endif %}
         {% endif %}
         <td>
           <i class="fas fa-angle-down"></i>
